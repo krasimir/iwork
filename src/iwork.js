@@ -69,11 +69,11 @@
           
           try {
             cursor = test;
-            process.on('uncaughtException', uncaught);
+            processRef.on('uncaughtException', uncaught);
             if (test.fn.length === 1) {
               test.fn(() => {
                 index += 1;
-                process.removeListener('uncaughtException', uncaught);
+                processRef.removeListener('uncaughtException', uncaught);
                 processTest();
               }); 
             } else {
@@ -87,7 +87,7 @@
                 index += 1;
                 processTest();
               }
-              process.removeListener('uncaughtException', uncaught);
+              processRef.removeListener('uncaughtException', uncaught);
             }
           } catch(error) {
             test.error = error;
