@@ -92,13 +92,28 @@ describe('Given the iwork library', () => {
     });
 
     return run().then(report => {
-      expect(reporters.html(report)).toBe(`<div class="iwork iwork-0"><p>Given</p></div>
-<div class="iwork iwork-1"><p>when</p></div>
-<div class="iwork iwork-2"><p>&#10004; then A</p></div>
-<div class="iwork iwork-error iwork-2"><p>&#10006; then B</p><pre>Error: expect(received).toBe(expected) // Object.is equality
+      const html = reporters.html(report);
 
-Expected: 2
-Received: 1</pre></div>`);
+      expect(html).toContain('<div class="iwork iwork-0"><p>Given</p></div>');
+      expect(html).toContain('<div class="iwork iwork-1"><p>when</p></div>');
+      expect(html).toContain('<div class="iwork iwork-2"><p>&#10004; then A</p></div>');
+      expect(html).toContain('<div class="iwork iwork-error iwork-2"><p>&#10006; then B</p>');
+    });
+  });
+  it('should provide the error message and the stack in the html reporter', () => {
+    const { describe: d, it: i, run, reporters } = iwork();
+
+    d('Given', () => {
+      i('then A', () => {
+        var a = {};
+        expect(a.method()).toBe(1);
+      });
+    });
+
+    return run().then(report => {
+      const html = reporters.html(report);
+
+      expect(html).toContain('<div class="iwork iwork-error iwork-1"><p>&#10006; then A</p><pre>TypeError: a.method is not a function');
     });
   });
 });

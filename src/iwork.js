@@ -11,6 +11,9 @@
     const cleanUpError = str => {
       return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
     }
+    const formatError = error => {
+      return `${ error.toString() }` + (error.stack ? `\n\n${ error.stack }` : '');
+    }
     const api = {
       report: [],
       data: {
@@ -62,7 +65,7 @@
         let html = '';
         html += report.map(({ text, level, error, report: r }) => {
           if (error) {
-            return `<div class="iwork iwork-error iwork-${ level }"><p>&#10006; ${ text }</p><pre>${ cleanUpError(error.toString()) }</pre></div>`;
+            return `<div class="iwork iwork-error iwork-${ level }"><p>&#10006; ${ text }</p><pre>${ cleanUpError(formatError(error)) }</pre></div>`;
           }
           return `<div class="iwork iwork-${ level }"><p>${ r ? '&#10004; ' : ''}${ text }</p></div>`;
         }).join('\n');
