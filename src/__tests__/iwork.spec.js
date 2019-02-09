@@ -92,8 +92,8 @@ describe('Given the iwork library', () => {
     });
 
     return run().then(report => {
-      expect(reporters.html(report)).toBe(`<div class="iwork iwork-0"><p>&#10004; Given</p></div>
-<div class="iwork iwork-1"><p>&#10004; when</p></div>
+      expect(reporters.html(report)).toBe(`<div class="iwork iwork-0"><p>Given</p></div>
+<div class="iwork iwork-1"><p>when</p></div>
 <div class="iwork iwork-2"><p>&#10004; then A</p></div>
 <div class="iwork iwork-error iwork-2"><p>&#10006; then B</p><pre>Error: expect(received).toBe(expected) // Object.is equality
 

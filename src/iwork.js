@@ -30,7 +30,7 @@
         if (item.tests) {
           cursor = item;
         }
-        let report = { text: item.text, level };
+        let report = { text: item.text, level, report: item.report };
         try {
           item.fn();
         } catch(error) {
@@ -60,11 +60,11 @@
     api.reporters = {
       html(report) {
         let html = '';
-        html += report.map(({ text, level, error}) => {
+        html += report.map(({ text, level, error, report: r }) => {
           if (error) {
             return `<div class="iwork iwork-error iwork-${ level }"><p>&#10006; ${ text }</p><pre>${ cleanUpError(error.toString()) }</pre></div>`;
           }
-          return `<div class="iwork iwork-${ level }"><p>&#10004; ${ text }</p></div>`;
+          return `<div class="iwork iwork-${ level }"><p>${ r ? '&#10004; ' : ''}${ text }</p></div>`;
         }).join('\n');
         return html;
       }
