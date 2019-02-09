@@ -13,7 +13,7 @@
     if (!ifNode) {
       const process = {};
       const uncaughtExceptionHandlers = [];
-      const originalOnerrorHandler = root.onerror;
+      const originalOnerrorHandler = window.onerror;
       process.removeListener = function(e, fn){
         if ('uncaughtException' == e) {
           if (originalOnerrorHandler) {
