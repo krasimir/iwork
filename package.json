@@ -1,6 +1,6 @@
 {
   "name": "iwork",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "A micro testing framework",
   "main": "iwork.min.js",
   "scripts": {

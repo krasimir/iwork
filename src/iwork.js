@@ -9,12 +9,15 @@
 }(typeof self !== 'undefined' ? self : this, function () {  
   return function () {
     const ifNode = (typeof process !== 'undefined') && (process.release.name === 'node');
+    let processRef;
 
-    if (!ifNode) {
-      const process = {};
+    if (ifNode) {
+      processRef = process;
+    } else {
       const uncaughtExceptionHandlers = [];
       const originalOnerrorHandler = window.onerror;
-      process.removeListener = function(e, fn){
+      processRef = {};
+      processRef.removeListener = function(e, fn){
         if ('uncaughtException' == e) {
           if (originalOnerrorHandler) {
             window.onerror = originalOnerrorHandler;
@@ -25,7 +28,7 @@
           if (i != -1) { uncaughtExceptionHandlers.splice(i, 1); }
         }
       };    
-      process.on = function(e, fn){
+      processRef.on = function(e, fn){
         if ('uncaughtException' == e) {
           window.onerror = function(err, url, line){
             fn(new Error(err + ' (' + url + ':' + line + ')'));
