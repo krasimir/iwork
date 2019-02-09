@@ -1,0 +1,42 @@
+{
+  "name": "iwork",
+  "version": "0.1.0",
+  "description": "A micro testing framework",
+  "main": "iwork.min.js",
+  "scripts": {
+    "release": "yarn test && babel ./src/iwork.js | uglifyjs -c -m -o ./iwork.min.js",
+    "test": "jest",
+    "dev": "jest --watch --verbose false"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/krasimir/iwork.git"
+  },
+  "keywords": [
+    "testing",
+    "micro",
+    "framework"
+  ],
+  "author": "Krasimir Tsonev",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/krasimir/iwork/issues"
+  },
+  "homepage": "https://github.com/krasimir/iwork#readme",
+  "devDependencies": {
+    "@babel/cli": "7.0.0",
+    "@babel/core": "7.2.2",
+    "@babel/preset-env": "7.2.3",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-jest": "23.6.0",
+    "jest": "23.6.0",
+    "regenerator-runtime": "0.13.1",
+    "uglify-js": "3.4.9"
+  },
+  "babel": {
+    "presets": [
+      "@babel/preset-env"
+    ],
+    "sourceType": "script"
+  }
+}
