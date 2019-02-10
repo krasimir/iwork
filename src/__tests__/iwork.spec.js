@@ -1,6 +1,19 @@
 const iwork = require('../iwork');
 const e = require('expect');
 
+function delay(time) {
+  return new Promise(done => {
+    setTimeout(done, time);
+  })
+}
+function delayReject(time) {
+  return new Promise(() => {
+    setTimeout(() => {
+      throw new Error('Ops!');
+    }, time);
+  })
+}
+
 describe('Given the iwork library', () => {
   it('should nest properly describes and its', () => {
     const { describe: d, it: i, run, data } = iwork();
@@ -165,21 +178,20 @@ describe('Given the iwork library', () => {
       expect(spy).toBeCalled();
     });
   });
-  it.skip('should support async tests that fail', () => {
+  it('should support async tests #2', () => {
     const { describe: d, it: i, run, reporters } = iwork();
     const spy = jest.fn();
 
     d('Given', () => {
-      i('then A', (done) => {
-        setTimeout(() => {
+      d('when', () => {
+        i('then A', async () => {
+          await delay(200);
           spy();
-          expect(1).toBe(2);
-          done();
-        }, 20);
+        });
       });
     });
 
-    return run().then(() => {
+    return run().then(report => {
       expect(spy).toBeCalled();
     });
   });                      

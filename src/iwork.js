@@ -7,10 +7,10 @@
     root.iwork = factory();
   }
 }(typeof self !== 'undefined' ? self : this, function () {  
-  return function () {
+  return function iwork() {
     const ifNode = (typeof process !== 'undefined') && (process.release.name === 'node');
     let processRef;
-
+  
     if (ifNode) {
       processRef = process;
     } else {
@@ -30,8 +30,8 @@
       };    
       processRef.on = function(e, fn){
         if ('uncaughtException' == e) {
-          window.onerror = function(err, url, line){
-            fn(new Error(err + ' (' + url + ':' + line + ')'));
+          window.onerror = function(err) {
+            fn(new Error(err));
             return true;
           };
           uncaughtExceptionHandlers.push(fn);
@@ -52,54 +52,79 @@
     };
     let cursor = api.data;
     let report = [];
-
-    const processTests = function (item, level, done) {
+  
+    const runTests = function (item, level, done) {
       let index = 0;
-      (function processTest() {
+      (function runSingleTest() {
         if (index < item.tests.length) {
           const test = item.tests[index];
           const uncaught = (error) => {
-            console.log(error);
+            test.error = error;
+            index += 1;
+            runSingleTest();
             return true;
           }
-
+  
           if (test.text !== 'Root') {
             report.push({ test, level });
           }
-          
+  
           try {
             cursor = test;
-            processRef.on('uncaughtException', uncaught);
             if (test.fn.length === 1) {
+              processRef.on('uncaughtException', uncaught);
               test.fn(() => {
                 index += 1;
                 processRef.removeListener('uncaughtException', uncaught);
-                processTest();
+                runSingleTest();
               }); 
             } else {
-              test.fn();
-              if (test.tests && test.tests.length > 0) {
-                processTests(test, level + 1, () => {
-                  index += 1;
-                  processTest();
-                });
+              processRef.on('uncaughtException', uncaught);
+              const funcRes = test.fn();
+              if (funcRes && typeof funcRes.then === 'function') {
+                funcRes.then(
+                  () => {
+                    processRef.removeListener('uncaughtException', uncaught);
+
+                    if (test.tests && test.tests.length > 0) {
+                      runTests(test, level + 1, () => {
+                        index += 1;
+                        runSingleTest();
+                      });
+                    } else {
+                      index += 1;
+                      runSingleTest();
+                    }
+                  },
+                  (error) => {
+
+                  }
+                )
               } else {
-                index += 1;
-                processTest();
+                processRef.removeListener('uncaughtException', uncaught);
+                if (test.tests && test.tests.length > 0) {
+                  runTests(test, level + 1, () => {
+                    index += 1;
+                    runSingleTest();
+                  });
+                } else {
+                  index += 1;
+                  runSingleTest();
+                }
               }
-              processRef.removeListener('uncaughtException', uncaught);
             }
           } catch(error) {
+            // console.log(error);
             test.error = error;
-            index++;
-            processTest();
+            index += 1;
+            runSingleTest();
           }
         } else {
           done();
         }
       })();
     }
-
+  
     api.describe = (text, fn) => {
       cursor.tests.push({ text, fn, tests: [] });
     }
@@ -109,7 +134,7 @@
     api.run = () => {
       return new Promise(done => {
         report = [];
-        processTests(api.data, 0, () => {
+        runTests(api.data, 0, () => {
           done(report);
         });
       });
@@ -128,7 +153,7 @@
         return html;
       }
     }
-
+  
     return api;
   };
 }));
