@@ -5,6 +5,11 @@
 
 🤘 [Demo](https://poet.codes/e/XDXZ41QnYCK#tester.js)
 
+## Why I've made it
+
+* There are not so many options for running tests client-side.
+* I needed something simple as setup which I have full control of. And by control I mean (a) when and how to run the tests and (b) when and how to display the results of the tests. Frameworks like Mocha for example make some assumptions on the content of your page and are not so flexible in terms of rendering the test results.
+
 ## Setup
 
 * `<script src="https://unpkg.com/iwork"></script>`
