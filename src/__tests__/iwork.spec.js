@@ -6,13 +6,6 @@ function delay(time) {
     setTimeout(done, time);
   })
 }
-function delayReject(time) {
-  return new Promise(() => {
-    setTimeout(() => {
-      throw new Error('Ops!');
-    }, time);
-  })
-}
 
 describe('Given the iwork library', () => {
   it('should nest properly describes and its', () => {
@@ -67,58 +60,48 @@ describe('Given the iwork library', () => {
       });
     });
 
-    // console.log(JSON.stringify(data, null, 2));
-
+    
     return run().then(() => {
-    //   expect(data).toStrictEqual({
-    //     "tests": [
-    //       {
-    //         "text": "given A",
-    //         "fn": expect.any(Function),
-    //         "tests": [
-    //           {
-    //             "text": "when A",
-    //             "fn": expect.any(Function),
-    //             "tests": [
-    //               {
-    //                 "text": "something else",
-    //                 "fn": expect.any(Function),
-    //                 "tests": [
-    //                   {
-    //                     "text": "test",
-    //                     "fn": expect.any(Function),
-    //                     "report": true
-    //                   }
-    //                 ]
-    //               },
-    //               {
-    //                 "text": "then A",
-    //                 "fn": expect.any(Function),
-    //                 "report": true
-    //               }
-    //             ]
-    //           }
-    //         ]
-    //       },
-    //       {
-    //         "text": "given B",
-    //         "fn": expect.any(Function),
-    //         "tests": [
-    //           {
-    //             "text": "when B",
-    //             "fn": expect.any(Function),
-    //             "tests": [
-    //               {
-    //                 "text": "then B",
-    //                 "fn": expect.any(Function),
-    //                 "report": true
-    //               }
-    //             ]
-    //           }
-    //         ]
-    //       }
-    //     ]
-    //   });
+      expect(JSON.stringify(data, null, 2)).toEqual(`{
+  "text": "Root",
+  "tests": [
+    {
+      "text": "A1",
+      "tests": [
+        {
+          "text": "A2",
+          "tests": [
+            {
+              "text": "A3_1",
+              "tests": [
+                {
+                  "text": "exercise1"
+                }
+              ]
+            },
+            {
+              "text": "exercise2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "text": "B1",
+      "tests": [
+        {
+          "text": "B1",
+          "tests": [
+            {
+              "text": "exercise3"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}`);
+      
     });
   });
   it('should run expectations', () => {
@@ -194,5 +177,34 @@ describe('Given the iwork library', () => {
     return run().then(report => {
       expect(spy).toBeCalled();
     });
-  });                      
+  });
+  it('should continue even if async test fails', () => {
+    const { describe: d, it: i, run, reporters } = iwork();
+    const spy1 = jest.fn();
+    const spy2 = jest.fn();
+    const logic = async function () {
+      await delay(200);
+      throw new Error('Ops!');
+    }
+
+    d('Given', () => {
+      d('when', () => {
+        i('then A', async () => {
+          spy1();
+          await logic();
+        });
+      });
+      d('when 2', () => {
+        i('should work', () => {
+          spy2();
+        });
+      });
+    });
+
+    return run().then(report => {
+      expect(spy1).toBeCalled();
+      expect(spy2).toBeCalled();
+      expect(report[2].test.error.message).toBe('Ops!');
+    });
+  });   
 });

@@ -8,36 +8,32 @@
   }
 }(typeof self !== 'undefined' ? self : this, function () {  
   return function iwork() {
-    const ifNode = (typeof process !== 'undefined') && (process.release.name === 'node');
-    let processRef;
-  
-    if (ifNode) {
-      processRef = process;
-    } else {
-      const uncaughtExceptionHandlers = [];
-      const originalOnerrorHandler = window.onerror;
-      processRef = {};
-      processRef.removeListener = function(e, fn){
-        if ('uncaughtException' == e) {
-          if (originalOnerrorHandler) {
-            window.onerror = originalOnerrorHandler;
-          } else {
-            window.onerror = function() {};
-          }
-          var i = uncaughtExceptionHandlers.findIndex(f => f === fn);
-          if (i != -1) { uncaughtExceptionHandlers.splice(i, 1); }
+
+    const processRef = {};
+    const uncaughtExceptionHandlers = [];
+    const originalOnerrorHandler = window.onerror;
+
+    processRef.removeListener = function(e, fn){
+      if ('uncaughtException' == e) {
+        if (originalOnerrorHandler) {
+          window.onerror = originalOnerrorHandler;
+        } else {
+          window.onerror = function() {};
         }
-      };    
-      processRef.on = function(e, fn){
-        if ('uncaughtException' == e) {
-          window.onerror = function(err) {
-            fn(new Error(err));
-            return true;
-          };
-          uncaughtExceptionHandlers.push(fn);
-        }
-      };
-    }
+        var i = uncaughtExceptionHandlers.findIndex(f => f === fn);
+        if (i != -1) { uncaughtExceptionHandlers.splice(i, 1); }
+      }
+    };    
+    processRef.on = function(e, fn){
+      if ('uncaughtException' == e) {
+        window.onerror = function(err) {
+          fn(new Error(err));
+          return true;
+        };
+        uncaughtExceptionHandlers.push(fn);
+      }
+    };
+
     const cleanUpError = str => {
       return str.replace(/[\u001b\u009b][[()#;?]*(?:[0-9]{1,4}(?:;[0-9]{0,4})*)?[0-9A-ORZcf-nqry=><]/g, '');
     }
@@ -97,7 +93,9 @@
                     }
                   },
                   (error) => {
-
+                    test.error = error;
+                    index += 1;
+                    runSingleTest();
                   }
                 )
               } else {

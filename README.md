@@ -1,3 +1,3 @@
 # &lt;code>: I work
 
-A Micro Testing Framework
+A micro testing framework for the browser

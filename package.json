@@ -1,13 +1,12 @@
 {
   "name": "iwork",
-  "version": "0.1.7",
-  "description": "A micro testing framework",
+  "version": "1.0.0",
+  "description": "A micro testing framework for the browser",
   "main": "iwork.min.js",
   "scripts": {
     "release": "yarn test && babel ./src/iwork.js | uglifyjs -c -m -o ./iwork.min.js",
     "test": "jest",
-    "dev": "jest ./src/__tests__/iwork.spec.js --watch --verbose false",
-    "dev-cli": "node ./cli.js ./src/**/*.test.js"
+    "dev": "jest ./src/__tests__/iwork.spec.js --watch --verbose false"
   },
   "repository": {
     "type": "git",
@@ -28,7 +27,6 @@
     "babel-jest": "23.6.0",
     "expect": "24.1.0",
     "jest": "23.6.0",
-    "regenerator-runtime": "0.13.1",
     "uglify-js": "3.4.9"
   },
   "babel": {
@@ -36,23 +34,5 @@
       "@babel/preset-env"
     ],
     "sourceType": "script"
-  },
-  "bin": {
-    "iwork": "./cli.js"
-  },
-  "dependencies": {
-    "@babel/cli": "7.0.0",
-    "@babel/core": "7.2.2",
-    "@babel/plugin-transform-regenerator": "7.0.0",
-    "@babel/plugin-transform-runtime": "7.2.0",
-    "@babel/preset-env": "7.2.3",
-    "@babel/preset-react": "7.0.0",
-    "@babel/runtime": "7.3.1",
-    "babel-core": "^7.0.0-bridge.0",
-    "babel-plugin-transform-es2015-modules-commonjs": "6.26.2",
-    "chalk": "2.4.2",
-    "chokidar": "2.1.0",
-    "glob": "7.1.3",
-    "yargs": "12.0.5"
   }
 }
