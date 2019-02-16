@@ -1,4 +1,4 @@
-# &lt;code>: I work
+# me: Hey code, are you broken?<br />&lt;code>: I work
 
 * A micro testing framework for the browser. Only 2.1Kb.
 * Bare minimum API (`describe`, `it`, `run` and HTML reporter)
