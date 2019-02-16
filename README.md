@@ -1,4 +1,4 @@
-# <developer>: Hey code, are you broken?<br />&lt;code>: I work
+# &lt;developer>: Hey code, are you broken?<br />&lt;code>: I work<br />&lt;developer>: prove it!<br />&lt;code>: hold my beer 🍺
 
 * A micro testing framework for the browser. Only 2.1Kb.
 * Bare minimum API (`describe`, `it`, `run` and HTML reporter)
