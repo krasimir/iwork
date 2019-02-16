@@ -51,76 +51,70 @@
   
     const runTests = function (item, level, done) {
       let index = 0;
-      (function runSingleTest() {
-        if (index < item.tests.length) {
-          const test = item.tests[index];
-          const uncaught = (error) => {
-            test.error = error;
-            index += 1;
-            runSingleTest();
-            return true;
-          }
-  
-          if (test.text !== 'Root') {
-            report.push({ test, level });
-          }
-  
-          try {
-            cursor = test;
-            if (test.fn.length === 1) {
-              processRef.on('uncaughtException', uncaught);
-              test.fn(() => {
-                index += 1;
-                processRef.removeListener('uncaughtException', uncaught);
-                runSingleTest();
-              }); 
-            } else {
-              processRef.on('uncaughtException', uncaught);
-              const funcRes = test.fn();
-              if (funcRes && typeof funcRes.then === 'function') {
-                funcRes.then(
-                  () => {
-                    processRef.removeListener('uncaughtException', uncaught);
-
-                    if (test.tests && test.tests.length > 0) {
-                      runTests(test, level + 1, () => {
-                        index += 1;
-                        runSingleTest();
-                      });
-                    } else {
-                      index += 1;
-                      runSingleTest();
-                    }
-                  },
-                  (error) => {
-                    test.error = error;
-                    index += 1;
-                    runSingleTest();
-                  }
-                )
-              } else {
-                processRef.removeListener('uncaughtException', uncaught);
-                if (test.tests && test.tests.length > 0) {
-                  runTests(test, level + 1, () => {
-                    index += 1;
-                    runSingleTest();
-                  });
-                } else {
-                  index += 1;
-                  runSingleTest();
-                }
-              }
-            }
-          } catch(error) {
-            // console.log(error);
-            test.error = error;
-            index += 1;
-            runSingleTest();
-          }
-        } else {
-          done();
+      const runSingleTest = function() {
+        if (index >= item.tests.length) {
+          return done();
         }
-      })();
+
+        const test = item.tests[index];
+        const uncaught = (error) => {
+          test.error = error;
+          next();
+          return true;
+        }
+
+        if (test.text !== 'Root') {
+          report.push({ test, level });
+        }
+
+        try {
+          cursor = test;
+          if (test.fn.length === 1) {
+            processRef.on('uncaughtException', uncaught);
+            test.fn(() => {
+              index += 1;
+              processRef.removeListener('uncaughtException', uncaught);
+              runSingleTest();
+            }); 
+          } else {
+            processRef.on('uncaughtException', uncaught);
+
+            const funcRes = test.fn();
+
+            if (funcRes && typeof funcRes.then === 'function') {
+              funcRes.then(
+                () => {
+                  processRef.removeListener('uncaughtException', uncaught);
+
+                  if (test.tests && test.tests.length > 0) {
+                    return runTests(test, level + 1, next);
+                  }
+                  next();
+                },
+                (error) => {
+                  test.error = error;
+                  next();
+                }
+              )
+            } else {
+              processRef.removeListener('uncaughtException', uncaught);
+              if (test.tests && test.tests.length > 0) {
+                return runTests(test, level + 1, next);
+              }
+              next();
+            }
+          }
+        } catch(error) {
+          test.error = error;
+          next();
+        }
+      };
+      const next = function() {
+        index += 1;
+        runSingleTest();
+      }
+
+      runSingleTest();
     }
   
     api.describe = (text, fn) => {
