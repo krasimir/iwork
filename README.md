@@ -14,23 +14,27 @@
 
 * `<script src="https://unpkg.com/iwork"></script>`
 * `yarn install iwork`
+* Use [`iwork.min.js`](https://github.com/krasimir/iwork/blob/master/iwork.min.js) directly
 
 ## Example:
 
 ```js
-const { describe, it, run, reporters } = iwork();
+<script src="https://unpkg.com/iwork"></script>
+<script>
+  const { describe, it, run, reporters } = iwork();
 
-describe('Given something', () => {
-  describe('when something is changed', () => {
-    it('then it should work', () => {
-			expect(1).toBe(1);
+  describe('Given something', () => {
+    describe('when something is changed', () => {
+      it('then it should work', () => {
+        expect(1).toBe(1);
+      });
     });
   });
-});
 
-run().then(report => {
-  document.querySelector('#output').innerHTML = reporters.html(report);
-});
+  run().then(report => {
+    document.querySelector('#output').innerHTML = reporters.html(report);
+  });
+</script>
 ```
 
 Notice that iwork does not come with assertion library. The example above uses `expect` which I got from [here](https://www.npmjs.com/package/expect). It works in the browser too from [this](https://unpkg.com/expect@%3C21/umd/expect.min.js) URL.
